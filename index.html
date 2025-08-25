@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Timer🕒</title>
+  <title>Timer</title>
   <style>
     body {
       margin: 0;
@@ -13,8 +13,9 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background-color: #1f2937; /* same as bg-gray-900 */
+      background-color: #1f2937;
       color: white;
+      transition: background-color 0.3s;
     }
 
     #time {
@@ -34,12 +35,24 @@
       border-radius: 8px;
       font-size: 1rem;
       cursor: pointer;
+      transition: background-color 0.2s;
     }
 
     .start { background: #2563eb; color: white; }
     .reset { background: #374151; color: white; }
     .fullscreen { background: #ca8a04; color: white; }
     .adjust button { background: #111827; color: white; }
+
+    /* Fullscreen styling: hide buttons */
+    .fullscreen-mode .controls,
+    .fullscreen-mode .adjust {
+      display: none;
+    }
+
+    .fullscreen-mode #time {
+      margin-bottom: 0;
+      font-size: 12rem; /* bigger in fullscreen */
+    }
   </style>
 </head>
 <body>
@@ -66,9 +79,16 @@
     let interval;
 
     function formatTime(seconds) {
-      const m = String(Math.floor(seconds / 60)).padStart(2, "0");
-      const s = String(seconds % 60).padStart(2, "0");
-      return `${m}:${s}`;
+      const h = Math.floor(seconds / 3600);         // hours
+      const m = Math.floor((seconds % 3600) / 60); // minutes
+      const s = seconds % 60;                       // seconds
+
+      // If hours > 0, show hh:mm:ss, else mm:ss
+      if (h > 0) {
+        return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+      } else {
+        return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+      }
     }
 
     function updateDisplay() {
@@ -111,8 +131,10 @@
     function toggleFullscreen() {
       if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen();
+        document.body.classList.add('fullscreen-mode');
       } else {
         document.exitFullscreen();
+        document.body.classList.remove('fullscreen-mode');
       }
     }
 
@@ -124,5 +146,3 @@
   </script>
 </body>
 </html>
-
-
