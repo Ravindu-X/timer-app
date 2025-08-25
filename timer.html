@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timer</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: monospace;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #1f2937; /* same as bg-gray-900 */
+      color: white;
+    }
+
+    #time {
+      font-size: 8rem;
+      margin-bottom: 2rem;
+    }
+
+    .controls, .adjust {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .start { background: #2563eb; color: white; }
+    .reset { background: #374151; color: white; }
+    .fullscreen { background: #ca8a04; color: white; }
+    .adjust button { background: #111827; color: white; }
+  </style>
+</head>
+<body>
+  <div id="time">05:00</div>
+
+  <div class="controls">
+    <button class="start" id="startPauseBtn">Start</button>
+    <button class="reset" id="resetBtn">Reset</button>
+    <button class="fullscreen" id="fullscreenBtn">Fullscreen</button>
+  </div>
+
+  <div class="adjust">
+    <button onclick="adjustTime(-30)">-30s</button>
+    <button onclick="adjustTime(-60)">-1m</button>
+    <button onclick="adjustTime(-300)">-5m</button>
+    <button onclick="adjustTime(30)">+30s</button>
+    <button onclick="adjustTime(60)">+1m</button>
+    <button onclick="adjustTime(300)">+5m</button>
+  </div>
+
+  <script>
+    let time = 300; // default 5 min
+    let running = false;
+    let interval;
+
+    function formatTime(seconds) {
+      const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+      const s = String(seconds % 60).padStart(2, "0");
+      return `${m}:${s}`;
+    }
+
+    function updateDisplay() {
+      document.getElementById("time").textContent = formatTime(time);
+    }
+
+    function startPause() {
+      if (running) {
+        clearInterval(interval);
+        document.getElementById("startPauseBtn").textContent = "Start";
+      } else {
+        interval = setInterval(() => {
+          if (time > 0) {
+            time--;
+            updateDisplay();
+          } else {
+            clearInterval(interval);
+            running = false;
+            document.getElementById("startPauseBtn").textContent = "Start";
+          }
+        }, 1000);
+        document.getElementById("startPauseBtn").textContent = "Pause";
+      }
+      running = !running;
+    }
+
+    function reset() {
+      clearInterval(interval);
+      time = 300;
+      running = false;
+      document.getElementById("startPauseBtn").textContent = "Start";
+      updateDisplay();
+    }
+
+    function adjustTime(amount) {
+      time = Math.max(0, time + amount);
+      updateDisplay();
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    document.getElementById("startPauseBtn").onclick = startPause;
+    document.getElementById("resetBtn").onclick = reset;
+    document.getElementById("fullscreenBtn").onclick = toggleFullscreen;
+
+    updateDisplay();
+  </script>
+</body>
+</html>
